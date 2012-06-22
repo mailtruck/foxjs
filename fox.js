@@ -4,6 +4,7 @@ var Fox = {
         merge: function (base, extension) {
             for (prop in extension) {
                 base[prop] = extension[prop];
+
             }
             return base;
         },
@@ -22,82 +23,82 @@ var Fox = {
         }
     },
 
-    makeLayout: function (art, options) {
-        var layout;
-        if (options && options.type=='flex') {
-            layout = this.makeFlex(art, options);
-        }
-        return layout || this.makeTable(art, options);
-    },
-
-    makeFlex: function (art, options) {
-
-        options = this.utils.merge({
-            output: 'node',
-            debug: false,
-            map: {},
-            styles: {}
-        }, options);
-
-        var nodes = [];
-
-        var makeFlexH = function (section) {
-            var solids = [];
-            for (var y = section.top; y <= section.bottom; y++) {
-                var solid = true;
-                for (var x = section.left; x <= section.right; x++) {
-                    if (art[y][x] != '+' && art[y][x] != '-') {
-                        solid = false;
-                        break;
-                    }
-                }
-                if (solid) {
-                    solids.push(y);
-                    console.log ('H:' + y);
-                }
-            }
-            section.children = [];
-            if (solids.length > 2) {
-                for (var s = 1, solidsLength = solids.length; s < solidsLength; s++) {
-                    var childSection = {left:section.left, top:solids[s-1], right:section.right, bottom:solids[s]};
-                    makeFlexV(childSection)
-                    section.children.push(childSection);
-                };
-            }
-        }
-
-        var makeFlexV = function (section) {
-            var solids = [];
-            for (var x = section.left; x <= section.right; x++) {
-                var solid = true;
-                for (var y = section.top; y <= section.bottom; y++) {
-                    if (art[y][x] != '+' && art[y][x] != '|') {
-                        solid = false;
-                        break;
-                    }
-                }
-                if (solid) {
-                    solids.push(x);
-                    console.log ('V:' + x);
-                }
-            }
-            section.children = [];
-            if (solids.length > 2) {
-                for (var s = 1, solidsLength = solids.length; s < solidsLength; s++) {
-                    var childSection = {left:solids[s-1], top:section.top, right:solids[s], bottom:section.bottom};
-                    makeFlexH(childSection)
-                    section.children.push(childSection);
-                };
-            }
-        }
-
-        var mainSection = {left:0, top:0, right:art[0].length-1, bottom:art.length-1};
-        makeFlexH(mainSection);
-        console.log(mainSection);
-
-        return null; // not implemented ;-)
-
-    },
+    // makeLayout: function (art, options) {
+    //     var layout;
+    //     if (options && options.type=='flex') {
+    //         layout = this.makeFlex(art, options);
+    //     }
+    //     return layout || this.makeTable(art, options);
+    // },
+    // 
+    // makeFlex: function (art, options) {
+    // 
+    //     options = this.utils.merge({
+    //         output: 'node',
+    //         debug: false,
+    //         map: {},
+    //         styles: {}
+    //     }, options);
+    // 
+    //     var nodes = [];
+    // 
+    //     var makeFlexH = function (section) {
+    //         var solids = [];
+    //         for (var y = section.top; y <= section.bottom; y++) {
+    //             var solid = true;
+    //             for (var x = section.left; x <= section.right; x++) {
+    //                 if (art[y][x] != '+' && art[y][x] != '-') {
+    //                     solid = false;
+    //                     break;
+    //                 }
+    //             }
+    //             if (solid) {
+    //                 solids.push(y);
+    //                 console.log ('H:' + y);
+    //             }
+    //         }
+    //         section.children = [];
+    //         if (solids.length > 2) {
+    //             for (var s = 1, solidsLength = solids.length; s < solidsLength; s++) {
+    //                 var childSection = {left:section.left, top:solids[s-1], right:section.right, bottom:solids[s]};
+    //                 makeFlexV(childSection)
+    //                 section.children.push(childSection);
+    //             };
+    //         }
+    //     }
+    // 
+    //     var makeFlexV = function (section) {
+    //         var solids = [];
+    //         for (var x = section.left; x <= section.right; x++) {
+    //             var solid = true;
+    //             for (var y = section.top; y <= section.bottom; y++) {
+    //                 if (art[y][x] != '+' && art[y][x] != '|') {
+    //                     solid = false;
+    //                     break;
+    //                 }
+    //             }
+    //             if (solid) {
+    //                 solids.push(x);
+    //                 console.log ('V:' + x);
+    //             }
+    //         }
+    //         section.children = [];
+    //         if (solids.length > 2) {
+    //             for (var s = 1, solidsLength = solids.length; s < solidsLength; s++) {
+    //                 var childSection = {left:solids[s-1], top:section.top, right:solids[s], bottom:section.bottom};
+    //                 makeFlexH(childSection)
+    //                 section.children.push(childSection);
+    //             };
+    //         }
+    //     }
+    // 
+    //     var mainSection = {left:0, top:0, right:art[0].length-1, bottom:art.length-1};
+    //     makeFlexH(mainSection);
+    //     console.log(mainSection);
+    // 
+    //     return null; // not implemented ;-)
+    // 
+    // },
 
 
     makeTable: function (art, options) {
@@ -135,7 +136,7 @@ var Fox = {
         var table = [], tableRow = [], tableCell = {},
             r = 0, rowLength = rows.length,
             c = 0, columnLength = columns.length,
-            y, y1, yn, x, x1, xn,
+            y, y1, yn, x,  xn,
             style, styleString;
 
         while (r < rowLength - 1) {
@@ -146,20 +147,21 @@ var Fox = {
             while (c < columnLength - 1) {
                 tableCell = {colspan:1, rowspan:1};
                 x = columns[c];
-                x1 = columns[c] + 1;
-                if (art[y1][x] == '|' && art[y][x1] == '-') {
+                if (art[y1][x] == '|' && art[y][x+1] == '-') {
                     xn = columns[c + 1];
                     while (art[y1][xn] != '|') {
                         tableCell.colspan += 1;
                         xn = columns[c + tableCell.colspan];
                     }
                     yn = rows[r + 1];
-                    while (art[yn][x1] != '-') {
+                    while (art[yn][x+1] != '-') {
                         tableCell.rowspan += 1;
                         yn = rows[r + tableCell.rowspan];
                     }
-                    key = art[y1][x1];
+                    key = art[y1][x+1];
+                    console.log(options);
                     if (key) {
+                    if(options.map[key].callback) console.log(key + '')
                         if (options.map[key]) {
                             tableCell.content = options.map[key];
                         } else {
@@ -216,12 +218,19 @@ var Fox = {
                     cellElement.appendChild(cell.content.el);
                 } else if (cell.content.nodeType) {
                     cellElement.appendChild(cell.content);
+                    // if (cell.content.id)  cellElement.setAttribute('id', cell.content.id);
+                    
                 } else {
                     cellElement.innerHTML = cell.content;
+                     // if (cell.content.id)  cellElement.setAttribute('id', cell.content.id);
+                     
                 }
                 if (cell.style) {
                     cellElement.setAttribute('style', cell.style);
                 }
+                if (cell.content.id)  cellElement.setAttribute('id', cell.content.id);
+                if (cell.content.callback) cell.content.callback(cellElement);
+                
                 rowElement.appendChild(cellElement);
             }, this);
             tableElement.appendChild(rowElement);
